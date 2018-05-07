@@ -15,18 +15,24 @@ function handler (request, response) {
 
     var pathname = url.parse(request.url).pathname;
 
-    URL = URL.replace("/","");
-    response.writeHead(200, {"Content-Type": "text/html"});
-    response.write("<h1>Hello!</h1>");
-    response.write("<p>You asked for <code>" + URL + "</code></p>");
-    response.write(pathname);
-    response.end();
-    
+    if(/^\/query/.test(pathname)) {
+    	URL = URL.replace("/","");
+    	response.writeHead(200, {"Content-Type": "text/html"});
+    	response.write("<h1>Hello!</h1>");
+    	response.write("<p>You asked for <code>" + URL + "</code></p>");
+    	response.write("Path: " + pathname);
+    	response.end();
+    } else {
+    	file.serve(request, response);
+    }
+
+
+
 }
 
 
 var server = http.createServer(handler);
 
 // fill in YOUR port number!
-server.listen("59462");
+server.listen(59462);
 
