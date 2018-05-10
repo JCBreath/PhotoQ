@@ -49,7 +49,7 @@ function handler (request, response) {
 
             else {
                 response.writeHead(404, {"Content-Type": "text/html"});
-                response.write("404 PAGE NOT FOUND.\n");
+                response.write("<p>404 PAGE NOT FOUND.<p>");
                 response.end();
                 console.log("File ./public" + pathname + " not found.");
             }
