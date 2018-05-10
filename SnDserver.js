@@ -40,7 +40,20 @@ function handler (request, response) {
     }
     // show files in /public
     else {
-    	file.serve(request, response);
+        console.log("Request file: " + pathname);
+        fs.exists("./public" + pathname, function (exist) {
+            if(exist && pathname != "/") {
+    	        file.serve(request, response);
+                console.log("File ./public" + pathname + "served.");
+            }
+
+            else {
+                response.writeHead(404, {"Content-Type": "text/html"});
+                response.write("404 PAGE NOT FOUND.\n");
+                response.end();
+                console.log("File ./public" + pathname + " not found.");
+            }
+        });
     }
 }
 
