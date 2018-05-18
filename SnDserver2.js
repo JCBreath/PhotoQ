@@ -27,20 +27,27 @@ function handler (request, response) {
         
         // get all matched rows by index (_IDX)
         db.all("select " + "*" + " from photoTags where _IDX in(" + numList + ")", function(err, res) {
-            console.log(JSON.stringify(res));
-            objList = [];
-            for(var i = 0; i < res.length; i++) {
-                // create a object
-                var obj = {};
-                obj.fileName = res[i]._FILENAME;
-                obj.width = res[i]._WIDTH;
-                obj.height = res[i]._HEIGHT;
-                objList.push(obj);
+            if(!err) {
+                console.log(JSON.stringify(res));
+                objList = [];
+                for(var i = 0; i < res.length; i++) {
+                    // create a object
+                    var obj = {};
+                    obj.fileName = res[i]._FILENAME;
+                    obj.width = res[i]._WIDTH;
+                    obj.height = res[i]._HEIGHT;
+                    objList.push(obj);
+                }
+                // respond with a list of objects
+                response.writeHead(400, {"Content-Type": "text/plain"});
+                response.write(JSON.stringify(objList));
+                response.end();
+            } else {
+                console.log(err);
+                response.writeHead(400, {"Content-Type": "text/plain"});
+                response.write("{}");
+                response.end();
             }
-            // respond with a list of objects
-            response.writeHead(400, {"Content-Type": "text/plain"});
-            response.write(JSON.stringify(objList));
-            response.end();
         });
     }
     // show files in /public
