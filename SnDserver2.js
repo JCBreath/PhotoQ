@@ -5,11 +5,15 @@ var http  = require('http');
 var static = require('node-static');
 var url = require('url');
 var fs = require('fs');
+var sqlite3 = require("sqlite3").verbose();
 
 var file = new static.Server('./public');
 var server = null;
 var no = 0;
 var imgList = [];
+var objList = {};
+var db = new sqlite3.Database("PhotoQ.db");
+var dbInUse = false;
 
 // like a callback
 function handler (request, response) {
@@ -24,28 +28,47 @@ function handler (request, response) {
     	URL = URL.replace("/","");
     	//console.log(URL.split('?')[1].split('=')[0]);
     	
-    	var imgNum = Number(URL.split('?')[1].split('=')[1]);
+    	//var imgNum = Number(URL.split('?')[1].split('=')[1]);
         var numList = URL.split('?')[1].split('=')[1].split('+');
 
         var list = [];
+        
 
         for(var i=0; i<numList.length; i++) {
-            var obj = {};
-            obj.fileName = "a";
-            obj.width = 0;
-            obj.height = 0;
-            list.push(obj);
+            var imgNum = Number(numList[i])
+            if(imgNum >= 0 && imgNum < 989) {
+                dbInUse = true;
+                db.all("select " + "*" + " from photoTags",function(err,res) {
+                    if(!err) {
+                        objList.objList = res;
+                        console.log(JSON.stringify(objList));
+                        response.writeHead(400, {"Content-Type": "text/plain"});
+                        response.write(JSON.stringify(objList));
+                        response.end();
+                        dbInUse = false;
+                    } else {
+                        console.log(err);
+                    }
+                });
+                /*var obj = {};
+
+                obj.fileName = "a";
+                obj.width = 0;
+                obj.height = 0;
+                list.push(obj);*/
+            }
             
         }
-
+        db.close();
+        /*
         var objList = {};
         objList.objList = list;
-
-        console.log(objList);
-
+        */
+        //console.log(objList);
+        /*console.log("OBJLIST: " + objList);
         response.writeHead(400, {"Content-Type": "text/plain"});
         response.write(JSON.stringify(objList));
-            response.end();
+        response.end();*/
 
     	/*
         if(imgNum < 0 || imgNum > 989) {
