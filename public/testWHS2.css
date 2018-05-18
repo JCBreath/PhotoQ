@@ -37,7 +37,7 @@ header {
 
 #search-input {
 	border: 1px;
-	border-radius: 1px;
+	border-radius: 0px;
 	border-style: solid;
 	margin-right: 0px;
 	width: 60%;
@@ -48,7 +48,7 @@ header {
 
 #search-btn {
 	border: 1px;
-	border-radius: 1px;
+	border-radius: 0px;
 	border-style: solid;
 	border-left: hidden;
 	margin-left: 0px;
@@ -60,6 +60,10 @@ header {
 
 main {
 	background-color: #eeeeee;
+}
+
+#display {
+	padding: 10px;
 }
 
 #react {
