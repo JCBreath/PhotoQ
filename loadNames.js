@@ -16,9 +16,33 @@ var height = 0;
 var width = 0;
 var index;
 
+var cmdStr = 'INSERT INTO photoTags VALUES(_IDX, "_FILENAME", _WIDTH, _HEIGHT, "_LOC", "_LIST")';
+var cbCount = 0;
 
+var callback_count = 0;
+var imgBuffs = [];
 
-for(i; i < len; i ++){
+function main() {
+  for(var i = 0; i < obj.photoURLs.length; i++) {
+    var photoURL = obj.photoURLs[i];
+    var options = url.parse(photoURL);
+    http.get(options, function(res){
+      var chunks = [];
+      res.on('data', function(chunk) {
+        chunks.push(chunk);
+      }).on('end', function() {
+        var buffer = Buffer.concat(chunks);
+        imgBuffs.push(buffer);
+        callback_count++;
+        if(callback_count == obj.photoURLs.length)
+          loadToTable();
+      });
+    });
+  }
+}
+
+/*
+for(i; i < len; i++){
 var firstPhoto = obj.photoURLs[i];
 var options = url.parse(firstPhoto);
 
@@ -29,6 +53,7 @@ http.get(options, function (response) {
     chunks.push(chunk);
   }).on('end', function() {
     var buffer = Buffer.concat(chunks);
+  console.log(i);
 	saveTable(i, dbFileName, sizeOf(buffer).height, sizeOf(buffer).width, location, list);
 
 });
@@ -36,13 +61,14 @@ http.get(options, function (response) {
 
 
 }
+*/
+//dumpDB();
 
-dumpDB();
-
-
-
-var cmdStr = 'INSERT INTO photoTags VALUES(_IDX, "_FILENAME", _WIDTH, _HEIGHT, "_LOC", "_LIST")';
-var cbCount = 0;
+function loadToTable() {
+  for(var i = 0; i < imgBuffs.length; i++) {
+    saveTable(i, obj.photoURLs[i], sizeOf(imgBuffs[i]).width, sizeOf(imgBuffs[i]).height, location, list);
+  }
+}
 
 
 function insertDataCallback(err) {
@@ -68,9 +94,13 @@ function saveTable(index, name, height, width, location, list){
 
 }
 
+
+
 function dumpDB() {
   db.all ( 'SELECT * FROM photoTags', dataCallback);
       function dataCallback( err, data ) {
 		console.log(data) 
       }
 }
+
+main();
