@@ -35,7 +35,7 @@ function reqListener() {
 // Called when the user pushes the "submit" button 
 function photoByNumber() {
 
-	var numList = document.getElementById("num").value;
+	var numList = document.getElementById("search-input").value;
 	numList = numList.trim();
 	numList = numList.replace(/,/g, "+"); // separate by commas
 	console.log(numList);

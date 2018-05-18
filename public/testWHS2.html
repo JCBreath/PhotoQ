@@ -12,20 +12,16 @@
 <body>
 
 <header>
-<h1>Testing PhotoQ</h1>
+	<div id="search-left"><h1 id="heading">PhotoQ</h1></div>
+
+		<input id="search-input" placeholder="photo number">
+		<img onclick="photoByNumber()" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSesTDQ6cm4cIFjzN-c64fqOvzdz3UVV3VbhGUgUETTk4S-HsrF" id="search-btn">
+
+	<div id="search-right"></div>
 </header>
 
 
 <main>
-<div id="query">
-<P>
-Load a photo by number:
-</p>
-
-<input id="num" placeholder="photo number"> 
-<button onclick="photoByNumber()">Submit</button>
-</div>
-
 <div id="photoDisplay">
 <img id="photoImg">
 </div>
