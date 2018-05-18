@@ -9,11 +9,7 @@ var sqlite3 = require("sqlite3").verbose();
 
 var file = new static.Server('./public');
 var server = null;
-var no = 0;
-var imgList = [];
-var objList = {};
 var db = new sqlite3.Database("PhotoQ.db");
-var dbInUse = false;
 
 // like a callback
 function handler (request, response) {
@@ -26,64 +22,26 @@ function handler (request, response) {
     // request query
     if(/^\/query/.test(pathname)) {
     	URL = URL.replace("/","");
-    	//console.log(URL.split('?')[1].split('=')[0]);
-    	
-    	//var imgNum = Number(URL.split('?')[1].split('=')[1]);
-        var numList = URL.split('?')[1].split('=')[1].split('+');
 
-        var list = [];
+        var numList = URL.split('?')[1].split('=')[1].replace(/\+/, ',');;
         
-
-        for(var i=0; i<numList.length; i++) {
-            var imgNum = Number(numList[i])
-            if(imgNum >= 0 && imgNum < 989) {
-                dbInUse = true;
-                db.all("select " + "*" + " from photoTags",function(err,res) {
-                    if(!err) {
-                        objList.objList = res;
-                        console.log(JSON.stringify(objList));
-                        response.writeHead(400, {"Content-Type": "text/plain"});
-                        response.write(JSON.stringify(objList));
-                        response.end();
-                        dbInUse = false;
-                    } else {
-                        console.log(err);
-                    }
-                });
-                /*var obj = {};
-
-                obj.fileName = "a";
-                obj.width = 0;
-                obj.height = 0;
-                list.push(obj);*/
+        // get all matched rows by index (_IDX)
+        db.all("select " + "*" + " from photoTags where _IDX in(" + numList + ")", function(err, res) {
+            console.log(JSON.stringify(res));
+            objList = [];
+            for(var i = 0; i < res.length; i++) {
+                // create a object
+                var obj = {};
+                obj.fileName = res[i]._FILENAME;
+                obj.width = res[i]._WIDTH;
+                obj.height = res[i]._HEIGHT;
+                objList.push(obj);
             }
-            
-        }
-        db.close();
-        /*
-        var objList = {};
-        objList.objList = list;
-        */
-        //console.log(objList);
-        /*console.log("OBJLIST: " + objList);
-        response.writeHead(400, {"Content-Type": "text/plain"});
-        response.write(JSON.stringify(objList));
-        response.end();*/
-
-    	/*
-        if(imgNum < 0 || imgNum > 989) {
-    		console.log("Error: image " + imgNum + " out of bound.");
-    		response.writeHead(400, {"Content-Type": "text/plain"});
-    		response.write("Bad Request\n");
-    		response.end();
-    	} else {
-    		console.log("Client requests image num: " + imgNum);
-    		response.writeHead(200, {"Content-Type": "text/plain"});
-    		response.write("http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/" + imgList[imgNum]);
-    		response.end();
-    		console.log("ImageURL=http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/" + imgList[imgNum] +" sent" );
-    	}
-        */
+            // respond with a list of objects
+            response.writeHead(400, {"Content-Type": "text/plain"});
+            response.write(JSON.stringify(objList));
+            response.end();
+        });
     }
     // show files in /public
     else {
@@ -106,21 +64,7 @@ function handler (request, response) {
     }
 }
 
-function loadImageList() {
-	var data = fs.readFileSync('photoList.json');
-	if(!data) {
-		console.log("cannot read photoList.json");
-	} else {
-		listObj = JSON.parse(data);
-		imgList = listObj.photoURLs;
-		console.log("photoList.json loaded");
-	}
-}
-
 var server = http.createServer(handler);
-
-loadImageList();
-
 
 // fill in YOUR port number!
 server.listen(59462);
