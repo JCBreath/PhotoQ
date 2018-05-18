@@ -16,6 +16,9 @@ var height = 0;
 var width = 0;
 var index;
 
+var createCmd = "CREATE TABLE photoTags (_IDX INTEGER UNIQUE NOT NULL PRIMARY KEY, _FILENAME TEXT, _WIDTH INTEGER, _HEIGHT INTEGER, _LOC TEXT, _LIST TEXT)";
+var dropCmd = "DROP TABLE photoTags";
+
 var cmdStr = 'INSERT INTO photoTags VALUES(_IDX, "_FILENAME", _WIDTH, _HEIGHT, "_LOC", "_LIST")';
 var cbCount = 0;
 
@@ -23,6 +26,8 @@ var callback_count = 0;
 var imgBuffs = [];
 
 function main() {
+  
+
   for(var i = 0; i < obj.photoURLs.length; i++) {
     var photoURL = obj.photoURLs[i];
     var options = url.parse(photoURL);
@@ -41,6 +46,16 @@ function main() {
   }
 }
 
+// Always use the callback for database operations and print out any
+// error messages you get.
+function tableCreationCallback(err) {
+    if (err) {
+  console.log("Table creation error",err);
+    } else {
+  console.log("Database created");
+  db.close();
+    }
+}
 /*
 for(i; i < len; i++){
 var firstPhoto = obj.photoURLs[i];
@@ -103,4 +118,16 @@ function dumpDB() {
       }
 }
 
-main();
+// Recreate a table
+  db.run(dropCmd,function(err){
+    if(!err) {
+      db.run(createCmd, function(err) {
+        if(!err)
+          main();
+        else
+          console.log(err);
+      });
+    } else {
+      console.log(err);
+    }
+  });
