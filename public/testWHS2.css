@@ -60,6 +60,22 @@ header {
 
 main {
 	background-color: #eeeeee;
+	flex: 1 0 auto;
+}
+
+#no-search {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex: 1 0 auto;
+	height: 500px;
+}
+
+.no-search-hint {
+	color: #777777;
+	font-size: large;
+	margin: 10px;
 }
 
 #display {
@@ -110,4 +126,29 @@ img.normal {
 }
 
 img.selected {
+}
+
+@media (max-width: 500px)  {
+	header{
+		justify-content: space-between;
+		padding:0;
+	}
+	::-webkit-input-placeholder { /* WebKit browsers */
+        color: transparent;
+    }
+	#search-input{
+		visibility: hidden;
+		margin-left: 30px;
+		padding-right: 60px;
+	}
+	#search-btn {
+		border: none;
+		border-style: none;
+	}
+	#photoDisplay{
+		display: flex;
+		flex-direction:column;
+		align-items: center;
+		justify-content:center;
+	}
 }

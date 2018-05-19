@@ -23,7 +23,9 @@ function handler (request, response) {
     if(/^\/query/.test(pathname)) {
     	URL = URL.replace("/","");
 
-        var numList = URL.split('?')[1].split('=')[1].replace(/\+/, ',');;
+        var numList = URL.split('?')[1].split('=')[1].replace(/\+/g, ',');
+
+        console.log("requesting: " + numList);
         
         // get all matched rows by index (_IDX)
         db.all("select " + "*" + " from photoTags where _IDX in(" + numList + ")", function(err, res) {

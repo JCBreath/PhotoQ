@@ -9,7 +9,8 @@ var photoURLArray =
  { url: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/Red%20pencil%20urchin%20-%20Papahnaumokukea.jpg"}
  ];
 
-const photos = [
+
+var photos = [
 {src: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/A%20Torre%20Manuelina.jpg", width: 574, height: 381 },
 {src: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/Uluru%20sunset1141.jpg", width: 500 , height: 334 },
 {src: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/Sejong tomb 1.jpg", width: 574, height: 430},
@@ -18,15 +19,41 @@ const photos = [
 {src: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/Red%20pencil%20urchin%20-%20Papahnaumokukea.jpg", width: 574 , height: 382 }
 ];
 
+
+var columns = 2;
+var onSearch = false;
+var onMobile = false;
+
+//var photos = [];
 const photoURL = "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/";
 
+/* Finally, we actually run some code */
+
+const reactContainer = document.getElementById("react");
+
+
+
 function reqListener() {
+	
 	var objList = JSON.parse(this.responseText);
+	//console.log(objList);
 	console.log("File names:")
 	for(var i=0; i<objList.length; i++) {
-		//console.log(objList[i].fileName);
-		objList[i].src = photoURL + objList[i].fileName;
+		console.log(objList[i].fileName);
+		objList[i].src = objList[i].fileName;
+		console.log(objList[i].src);
 	}
+
+	photos = objList;
+
+	if(photos.length > 0)
+		document.getElementById("no-search").style.display = "none";	
+	ReactDOM.render(React.createElement(App),reactContainer);
+
+	console.log(objList);
+
+	//App.setState({columns:1})
+	
 	/*var photoURL = this.responseText;
 	var display = document.getElementById("photoImg");
 	display.src = photoURL;*/
@@ -40,6 +67,8 @@ function photoByNumber() {
 	numList = numList.replace(/,/g, "+"); // separate by commas
 	console.log(numList);
 	
+	//ReactDOM.render(React.createElement(App),reactContainer);
+
 	if (numList != NaN) {
 		var oReq = new XMLHttpRequest();
 		var URL = "query?numList=" + numList;
@@ -53,6 +82,16 @@ function photoByNumber() {
 		var display = document.getElementById("photoImg");
 		display.src = photoURL;
 		*/
+	}
+	onSearch = true;
+	var W = window.innerWidth;
+	if(W<=500){
+		document.getElementById("search-left").style.display = "none";
+		document.getElementById("search-input").style.visibility = "visible";
+		columns = 1;
+	}
+	else{
+		document.getElementById("search-left").style.display = "flex";
 	}
 
 }
@@ -147,8 +186,10 @@ class App extends React.Component {
   }
 
   render() {
+  	console.log(this.state.width);
     return (
-       React.createElement( Gallery, {photos: photos, 
+       React.createElement( Gallery, {photos: photos,
+       	   columns: columns, 
 		   onClick: this.selectTile, 
 		   ImageComponent: ImageTile} )
 	    );
@@ -157,9 +198,20 @@ class App extends React.Component {
 }
 
 
-/* Finally, we actually run some code */
 
-const reactContainer = document.getElementById("react");
-
-ReactDOM.render(React.createElement(App),reactContainer);
-
+window.onresize = function(){
+	if(window.innerWidth>500) {
+		document.getElementById("search-left").style.display = "flex";
+		if(columns == 1) {
+			columns = 2;
+			ReactDOM.render(React.createElement(App),reactContainer);
+		}
+	} else {
+		if(onSearch)
+			document.getElementById("search-left").style.display = "none";
+		if(columns == 2) {
+			columns = 1;
+			ReactDOM.render(React.createElement(App),reactContainer);
+		}
+	}
+}

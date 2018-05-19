@@ -1,4 +1,5 @@
-var obj  = require('./6whs.json');
+//var obj  = require('./6whs.json');
+var obj = require('./photoList.json')
 var url = require('url');
 var http = require('http');
 var sizeOf = require('image-size');
@@ -29,6 +30,7 @@ function main() {
   
 
   for(var i = 0; i < obj.photoURLs.length; i++) {
+    console.log("Retrieving: Image " + i);
     var photoURL = obj.photoURLs[i];
     var options = url.parse(photoURL);
     http.get(options, function(res){
@@ -39,6 +41,7 @@ function main() {
         var buffer = Buffer.concat(chunks);
         imgBuffs.push(buffer);
         callback_count++;
+        console.log(callback_count + " images retrieved");
         if(callback_count == obj.photoURLs.length)
           loadToTable();
       });
@@ -81,7 +84,8 @@ http.get(options, function (response) {
 
 function loadToTable() {
   for(var i = 0; i < imgBuffs.length; i++) {
-    saveTable(i, obj.photoURLs[i], sizeOf(imgBuffs[i]).width, sizeOf(imgBuffs[i]).height, location, list);
+    console.log("Writing image " + i + " to table.");
+    saveTable(i, obj.photoURLs[i], sizeOf(imgBuffs[i]).height, sizeOf(imgBuffs[i]).width, location, list);
   }
 }
 
