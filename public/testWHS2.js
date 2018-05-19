@@ -70,6 +70,7 @@ function photoByNumber() {
 	//ReactDOM.render(React.createElement(App),reactContainer);
 
 	if (numList != NaN) {
+		onSearch = true;
 		var oReq = new XMLHttpRequest();
 		var URL = "query?numList=" + numList;
 
@@ -83,7 +84,7 @@ function photoByNumber() {
 		display.src = photoURL;
 		*/
 	}
-	onSearch = true;
+	
 	var W = window.innerWidth;
 	if(W<=500){
 		document.getElementById("search-left").style.display = "none";
@@ -207,8 +208,10 @@ window.onresize = function(){
 			ReactDOM.render(React.createElement(App),reactContainer);
 		}
 	} else {
-		if(onSearch)
+		if(onSearch) {
 			document.getElementById("search-left").style.display = "none";
+			document.getElementById("search-input").style.visibility = "visible";
+		}
 		if(columns == 2) {
 			columns = 1;
 			ReactDOM.render(React.createElement(App),reactContainer);
