@@ -23,21 +23,38 @@ function handler (request, response) {
     if(/^\/query/.test(pathname)) {
     	URL = URL.replace("/","");
 
-        var numList = URL.split('?')[1].split('=')[1].replace(/\+/g, ',');
+        //var numList = URL.split('?')[1].split('=')[1].replace(/\+/g, ',');
+
+        var numList = URL.split('?')[1].split('=')[1].split('\+');
+        var sql_cmd = "select " + "*" + " from photoTags where "
+        for(var i=0; i<numList.length; i++) {
+            sql_cmd = sql_cmd + "(_LOC = \"" + numList[i].replace(/%20/g, ' ') + "\" OR _LIST like \"%" + numList[i] + "%\")";
+            if(i != numList.length - 1)
+                sql_cmd = sql_cmd + " AND ";
+        }
+
+        
 
         console.log("requesting: " + numList);
         
         // get all matched rows by index (_IDX)
-        db.all("select " + "*" + " from photoTags where _IDX in(" + numList + ")", function(err, res) {
+        //db.all("select " + "*" + " from photoTags where _LOC =\"" + numList + "\" or _LIST like \"%" + numList + "%\"", function(err, res) {
+        db.all(sql_cmd, function(err, res) {
             if(!err) {
                 console.log(JSON.stringify(res));
                 objList = [];
-                for(var i = 0; i < res.length; i++) {
+                // Max Display 12
+                var objMaxNum = 12;
+                if(res.length < objMaxNum)
+                    objMaxNum = res.length;
+                for(var i = 0; i < objMaxNum; i++) {
                     // create a object
                     var obj = {};
                     obj.fileName = res[i]._FILENAME;
                     obj.width = res[i]._WIDTH;
                     obj.height = res[i]._HEIGHT;
+                    obj.location = res[i]._LOC;
+                    obj.tags = res[i]._LIST;
                     objList.push(obj);
                 }
                 // respond with a list of objects
