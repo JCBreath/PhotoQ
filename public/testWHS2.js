@@ -9,7 +9,7 @@ var photoURLArray =
  { url: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/Red%20pencil%20urchin%20-%20Papahnaumokukea.jpg"}
  ];
 
-
+/*
 var photos = [
 {src: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/A%20Torre%20Manuelina.jpg", width: 574, height: 381 },
 {src: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/Uluru%20sunset1141.jpg", width: 500 , height: 334 },
@@ -18,13 +18,13 @@ var photos = [
 {src: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/Royal%20Palace%2c%20Rabat.jpg", width: 574, height: 410},
 {src: "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/Red%20pencil%20urchin%20-%20Papahnaumokukea.jpg", width: 574 , height: 382 }
 ];
-
+*/
 
 var columns = 2;
 var onSearch = false;
 var onMobile = false;
 
-//var photos = [];
+var photos = [];
 const photoURL = "http://lotus.idav.ucdavis.edu/public/ecs162/UNESCO/";
 
 /* Finally, we actually run some code */
@@ -97,7 +97,7 @@ function photoByNumber() {
 
 }
 
-
+/*
 // A react component for a tag
 class Tag extends React.Component {
 
@@ -158,12 +158,12 @@ class ImageTile extends React.Component {
 		     src: _photo.src}),
 		React.createElement('img',
 		    {className: _selected ? 'selected' : 'normal', 
-                     src: _photo.src, 
-		     width: _photo.width, 
-                     height: _photo.height
-			    })
-				)//createElement div
-	); // return
+                    src: _photo.src, 
+		     		width: _photo.width, 
+                   	height: _photo.height
+			})
+			//createElement div
+		); // return
     } // render
 } // class
 
@@ -197,7 +197,101 @@ class App extends React.Component {
   }
 
 }
+*/
 
+// A react component for a tag
+class Tag extends React.Component {
+
+    render () {
+	return React.createElement('p',  // type
+	    { className: 'tagText'}, // properties
+	   this.props.text);  // contents
+    }
+};
+
+
+// A react component for controls on an image tile
+class TileControl extends React.Component {
+
+    render () {
+	// remember input vars in closure
+        var _selected = this.props.selected;
+        var _src = this.props.src;
+        // parse image src for photo name
+	var photoName = _src.split("/").pop();
+	photoName = photoName.split('%20').join(' ');
+
+        return ( React.createElement('div', 
+ 	 {className: _selected ? 'selectedControls' : 'normalControls'},  
+         // div contents - so far only one tag
+              React.createElement(Tag,
+		 { text: photoName })
+	    )// createElement div
+	)// return
+    } // render
+};
+
+
+// A react component for an image tile
+class ImageTile extends React.Component {
+
+    constructor(props) {
+	    super(props);
+	    this.state = { selected: this.props.photo.selected };
+	    this.toggle = this.toggle.bind(this);
+    }
+
+    toggle(e) {
+	var opposite = !this.state.selected;
+	this.setState( { selected: opposite } );
+    }
+	
+
+    render() {
+	var _photo = this.props.photo;
+	var _selected = _photo.selected; // this one is just for readability
+
+	return (
+	    React.createElement('div', 
+	        {style: {margin: this.props.margin, width: _photo.width},
+		 className: 'tile',
+		 onClick: this.toggle },
+
+		 // contents of div - the Controls and an Image
+		React.createElement(TileControl,
+		    {selected: this.state.selected, 
+		     src: _photo.src}),
+		React.createElement('img',
+		    {className: this.state.selected ? 'selected' : 'normal', 
+                     src: _photo.src, 
+		     width: _photo.width, 
+                     height: _photo.height
+			    })
+		)//createElement div
+	); // return
+    } // render
+} // class
+
+
+
+// The react component for the whole image gallery
+// Most of the code for this is in the included library
+class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = { photos: photos };
+  }
+
+
+  render() {
+    return (
+       React.createElement( Gallery, {photos: photos, 
+		   ImageComponent: ImageTile} )
+	    );
+  }
+
+}
 
 
 window.onresize = function(){
